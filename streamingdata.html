@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <title>Index html</title>
+
+    <!--
+      <link href="style.css" rel="stylesheet"></link>
+    -->
+  </head>
+  <body>
+    <!--Puck.js for web bluetooth-->
+    <script src="https://www.puck-js.com/puck.js"></script>
+
+    <!--Buttons-->
+    <h1>Stuff</h1>
+
+    <div style="border: 5px solid red; padding: 1em;">
+      <button id="btnConnect">Connect</button>
+      <br>
+    </div>
+
+    <div id="compass" style="border: 5px solid purple; padding: 1em;">
+        <button id="btnCompass">Compass</button>
+        <h2 id="resultCompass">Compass Data</h2>
+    </div>
+    
+    <div id="accel" style="border: 5px solid orange; padding: 1em;">
+        <button id="btnAccel">Accel</button>
+        <h2 id="resultAccel">Accel Data</h2>
+    </div>
+
+    <script src="streamingdata.js"></script>
+  </body>
+</html>

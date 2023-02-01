@@ -1,6 +1,4 @@
 // randomNumber
-var randomNumber = Math.floor(Math.random() * 100) + 1;
-var success;
 var compassButton;
 var compassOutput;
 
@@ -16,8 +14,8 @@ Bangle.buzz();
 Bangle.setLCDPower(1);
 g.clear();
 g.setFontAlign(0,0); // center font
-g.setFont('6x8', 6);
-g.drawString('${randomNumber}', g.getWidth()/2, g.getHeight()/2);
+g.setFont('6x8', 2);
+g.drawString('Connected', g.getWidth()/2, g.getHeight()/2);
 `;
 
 var COMPASS_CODE = `
@@ -75,6 +73,10 @@ document.getElementById("btnConnect").addEventListener("click", function() {
   });
 });
 
+document.getElementById("btnCompass").addEventListener("click", addCompass);
+document.getElementById("btnAccel").addEventListener("click", addAccel);
+
+/*
 function checkPin() {
     let userInput = Number(pin.value);
 
@@ -123,22 +125,17 @@ function checkPin() {
         success = 0;
     }
 }
+*/
 
-document.getElementById("btnPin").addEventListener("click", checkPin);
+// document.getElementById("btnPin").addEventListener("click", checkPin);
 
 function addCompass() {
 
     connection.on("data", function(d) {
 
-      let text;
+      // let text;
 
       d = Math.round(d);
-
-      if (d < 200) {
-        text = "north";
-      } else if (d > 200) {
-        text = "south";
-      }
 
       /*
       if (0 <= d <= 45) {
@@ -154,7 +151,7 @@ function addCompass() {
       }
       */
 
-        document.getElementById("outputCompass").innerHTML = `${d}, ${text}`;
+        document.getElementById("resultCompass").innerHTML = `${d}`;
     });
 
     connection.write("reset();\n", function() {
@@ -162,6 +159,22 @@ function addCompass() {
         setTimeout(function() {
           // Now upload our code to it
           connection.write(COMPASS_CODE);
+        }, 1500);
+      });
+}
+
+function addAccel() {
+
+    connection.on("data", function(d) {
+
+        document.getElementById("resultAccel").innerHTML = `${d}`;
+    });
+
+    connection.write("reset();\n", function() {
+        // Wait for it to reset itself
+        setTimeout(function() {
+          // Now upload our code to it
+          connection.write(ACCEL_CODE);
         }, 1500);
       });
 }
