@@ -26,7 +26,24 @@ instruction();
 setTimeout(iniDisplay, 3000);
 
 function beginGame() {
+  console.log("HELLO THE GAME SHOULD BE STARTING NOW");
   inProgress = true;
+  
+  // run loop while game is in progress
+  while (inProgress) {
+    Bangle.on("accel", function(a) {
+      var accel = [
+        "a",
+        Math.round(a.x*100),
+        Math.round(a.y*100),
+        Math.round(a.z*100)
+        ];
+      // console.log(accel);
+      trackAccel(accel);
+    });
+
+  }
+
 }
 
 function winMsg(win) {
@@ -38,7 +55,8 @@ function winMsg(win) {
 }
 
 function trackAccel(a) {
-  let accel = a;
+  console.log(a);
+  
   
   // update ball position based on acceleration data
   // update win condition based on position and time
@@ -73,22 +91,7 @@ function checkWin(x, y) {
   }
 }
 
-setWatch(beginGame, BTN);
-
-// run loop while game is in progress
-while (inProgress) {
-  Bangle.on("accel", function(a) {
-    var accel = [
-      "a",
-      Math.round(a.x*100),
-      Math.round(a.y*100),
-      Math.round(a.z*100)
-      ];
-  });
-  trackAccel(accel);
-  
-}
-
+setWatch(setTimeout(beginGame, 1000), BTN);
 
 
 
