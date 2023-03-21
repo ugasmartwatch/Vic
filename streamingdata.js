@@ -20,6 +20,7 @@ g.drawString('Connected', g.getWidth()/2, g.getHeight()/2);
 
 var COMPASS_CODE = `
 Bangle.setCompassPower(1);
+Bangle.resetCompass();
 Bangle.on('mag', function (xyz) {
   var d = [
     xyz.heading

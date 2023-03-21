@@ -7,32 +7,76 @@ var dx, dy;
 dx = dy = 0;
 var points = [10,10,166,10,166,166,10,166];
 
+var diff;
 
 var hrmArr = [];
+var x1, y1 = 0;
+var obstacles;
+var border = [];
 
-// initial display resting stage
-function iniDisplay() {
-  // let points = [5,5,171,5,171,171,5,171]; 
-  // g.drawPoly(points, true);
+function randomCenters () {
+  
+    for (let i = 0; i < 5; i++) {
+
+      while (x1 == 0 || y1 == 0 || Math.abs(x1-88) < 7 || Math.abs(y1-88) < 7) {
+        x1 = Math.random() * (166-10) + 10;
+        y1 = Math.random() * (166-10) + 10;
+      }
+      // console.log(x, y);
+      obstacles = [x1-10, y1-10, x1+10, y1-10, x1+10, y1+10, x1-10, y1+10]; 
+      border.append(obstacles);
+      g.drawPoly(obstacles, true);
+
+    }
+  
+}
+
+function drawBorder () {
   Bangle.setLCDPower(1);
   g.clear();
   g.drawPoly(points, true);
+  
+}
+
+// initial display resting stage
+function iniDisplay(diff) {
+  // let points = [5,5,171,5,171,171,5,171]; 
+  // g.drawPoly(points, true);
+  
+  if (diff == 2) randomCenters();
+  
+  drawBorder();
   x = y = 88;
   g.drawCircle(x,y,7);
+
+  
 }
 
 // instructions
 function instruction() {
-  let msg = "Simple balance game: keep the ball within the parameter for 30 seconds to win. Press side button to begin";
+  // let msg = "Simple balance game: keep the ball within the parameter for 30 seconds to win. Press side button to begin.";
+  
+  let msg = "Simple balance game: keep the ball within the parameter for 30 seconds to win. Choose difficulty on next screen.";
+  
   E.showMessage(msg);
 }
 
+function difficulty() {
+  let menu = {
+    "":{value:"Difficulty?"},
+    "Easy": () => beginGame(1),
+    "Hard": () => beginGame(2)
+  };
+  E.showMenu(menu);
+}
+
 instruction();
-setTimeout(iniDisplay, 6500);
+setTimeout(difficulty, 6500);
 
-function beginGame() {
+function beginGame(d) {
+  diff = d;
+  iniDisplay(diff);
   console.log("HELLO THE GAME SHOULD BE STARTING NOW");
-
   
   // set the game to being in progress
   inProgress = true;
@@ -48,7 +92,7 @@ function beginGame() {
       Math.round(accel.y*100),
       Math.round(accel.z*100)
       ];
-    
+    // console.log(accelerometer);
     setTimeout(function (a) {trackAccel(accelerometer);}, 1000);
     
   });
@@ -82,7 +126,7 @@ function trackAccel(a) {
   */
   
   g.clear();
-  g.drawPoly(points, true);
+  drawBorder(diff);
   
   x = x + dx/150;
   y = y + dy/150;
@@ -92,12 +136,16 @@ function trackAccel(a) {
   
   if (x > 10 && x < 166 & y > 10 && y < 166) {
     // console.log("Tracking hrm");
+    
     trackHRM();
     
   } else { 
+    reset();
+    E.showMessage("You've lost!");
+    /*
     win = false;
     winCondition(win);
-
+    */
   }
   
 }
@@ -113,7 +161,7 @@ function trackHRM() {
        hrm.confidence
       ];
     
-    if (heart[2] >= 50 && hrmArr.length < 50) {
+    if (heart[2] >= 70 && hrmArr.length < 50) {
       hrmArr.push(heart[1]);
     } 
     
@@ -123,8 +171,8 @@ function trackHRM() {
     }, 0);
       
       var bpmAvg = bpmSum / hrmArr.length;
-      // Bangle.reset();
-      E.showMessage('Your heartrate:' + bpmAvg);
+      reset();
+      E.showMessage("Your heartrate:" + bpmAvg);
       
     }
     
@@ -156,7 +204,7 @@ function checkWin(x, y) {
     win = true;
   }
 }
-*/
+
 
 function winMsg(win) {
   if (win) {
@@ -168,11 +216,12 @@ function winMsg(win) {
     console.log("You've lost!");
     Bangle.setHRMPower(0);
     reset();
-    E.showMessage("You lost!");
+    setTimeout(E.showMessage("You lost!"), 3000);
   }
 }
+*/
 
-setWatch(beginGame, BTN);
+// setWatch(difficulty, BTN);
 
 
 
