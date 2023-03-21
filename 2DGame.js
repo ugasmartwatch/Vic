@@ -1,6 +1,7 @@
 // initialize game variable
-var time = new Date();
-var timeCounter = 0;
+var startTime = new Date();
+var endTime, timeDiff;
+
 var win;
 var inProgress;
 var x,y;
@@ -95,6 +96,38 @@ function beginGame(d) {
   var accel;
   var accelerometer = [];
 
+  Bangle.setHRMPower(1);
+  Bangle.on("HRM", function(h) {
+    
+    endTime = new Date();
+    timeDiff = (endTime - startTime) / 1000; // time in seconds
+    console.log(timeDiff);
+
+    var hrm = h;
+    var heart = [
+      "hrm",
+       hrm.bpm,
+       hrm.confidence
+      ];
+
+
+    if (heart[2] >= 70 && timeDiff < 30) {
+      hrmArr.push(heart[1]);
+    } 
+    
+    if (timeDiff > 30) {
+     var bpmSum = hrmArr.reduce(function (x, y) {
+        return x + y;
+    }, 0);
+      
+    Bangle.setHRMPower(0);
+
+    }
+    
+  });
+
+
+
   Bangle.on("accel", function(a) {
     accel = a;
     accelerometer = [
@@ -172,6 +205,7 @@ function trackAccel(a) {
   */
 }
 
+/*
 function trackHRM() {
   
   Bangle.setHRMPower(1);
@@ -203,7 +237,7 @@ function trackHRM() {
   // update heart rate 
 }
 
-/*
+
 function winCondition(win) {
   Bangle.reset();
   if (win) {
