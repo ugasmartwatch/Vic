@@ -1,5 +1,6 @@
 // initialize game variable
-var time;
+var time = new Date();
+var timeCounter = 0;
 var win;
 var inProgress;
 var x,y;
@@ -10,31 +11,36 @@ var points = [10,10,166,10,166,166,10,166];
 var diff;
 
 var hrmArr = [];
-var x1, y1 = 0;
 var obstacles;
 var border = [];
 
 function randomCenters () {
   
     for (let i = 0; i < 5; i++) {
-
+      var x1, y1;
+      x1 = y1 = 0;
+      
       while (x1 == 0 || y1 == 0 || Math.abs(x1-88) < 7 || Math.abs(y1-88) < 7) {
-        x1 = Math.random() * (166-10) + 10;
-        y1 = Math.random() * (166-10) + 10;
+        x1 = Math.random() * (156-20) + 20;
+        y1 = Math.random() * (156-20) + 20;
       }
       // console.log(x, y);
       obstacles = [x1-10, y1-10, x1+10, y1-10, x1+10, y1+10, x1-10, y1+10]; 
-      border.append(obstacles);
-      g.drawPoly(obstacles, true);
-
+      
+      console.log(obstacles);
+      // console.log("obstacles");
+      border.push(obstacles);
     }
   
 }
 
 function drawBorder () {
   Bangle.setLCDPower(1);
-  g.clear();
   g.drawPoly(points, true);
+  
+  for (let i = 0; i < border.length; i++) {
+      g.drawPoly(border[i], true);
+  }
   
 }
 
@@ -43,7 +49,12 @@ function iniDisplay(diff) {
   // let points = [5,5,171,5,171,171,5,171]; 
   // g.drawPoly(points, true);
   
-  if (diff == 2) randomCenters();
+  g.clear();
+  
+  if (diff == 2) {
+    console.log("diff = 2");
+    randomCenters();
+  }
   
   drawBorder();
   x = y = 88;
@@ -92,7 +103,7 @@ function beginGame(d) {
       Math.round(accel.y*100),
       Math.round(accel.z*100)
       ];
-    // console.log(accelerometer);
+    console.log(accelerometer);
     setTimeout(function (a) {trackAccel(accelerometer);}, 1000);
     
   });
@@ -126,7 +137,7 @@ function trackAccel(a) {
   */
   
   g.clear();
-  drawBorder(diff);
+  drawBorder();
   
   x = x + dx/150;
   y = y + dy/150;
@@ -134,6 +145,17 @@ function trackAccel(a) {
   g.setColor(1);
   g.drawCircle(x,y,7);
   
+  console.log("drawStuff");
+  
+  if (checkProg(x, y)) {
+    console.log("trackHRM");
+    trackHRM();
+  } else {
+    reset();
+    console.log("stuff");
+  }
+  
+  /*
   if (x > 10 && x < 166 & y > 10 && y < 166) {
     // console.log("Tracking hrm");
     
@@ -142,12 +164,12 @@ function trackAccel(a) {
   } else { 
     reset();
     E.showMessage("You've lost!");
-    /*
-    win = false;
-    winCondition(win);
-    */
+    
+    // win = false;
+    // winCondition(win);
+    
   }
-  
+  */
 }
 
 function trackHRM() {
@@ -171,7 +193,7 @@ function trackHRM() {
     }, 0);
       
       var bpmAvg = bpmSum / hrmArr.length;
-      reset();
+      // reset();
       E.showMessage("Your heartrate:" + bpmAvg);
       
     }
@@ -181,6 +203,7 @@ function trackHRM() {
   // update heart rate 
 }
 
+/*
 function winCondition(win) {
   Bangle.reset();
   if (win) {
@@ -189,23 +212,43 @@ function winCondition(win) {
     E.showMessage("You've lost!");
   }
 }
+*/
 
 
-/*
-function checkWin(x, y) {
+
+function checkProg(x, y) {
+  console.log("checkProg");
   // if the ball ever goes out of bounds
   if (x <= 10 || y <= 10 || x >= 166 || y >= 166) {
+    console.log("awef");
     inProgress = false;
     win = false;
   }
   
+  if (diff == 2) {
+  
+    for (let i = 0; i < 5; i++) {
+      for (let j = 0; j < obstacles.length-1; j+2) {
+        if (x == obstacles[j] || y == obstacles[j+1]) {
+          console.log("checking");
+          inProgress = false;
+          win = false;
+        }
+      }
+    }
+    
+  }
+  
   // if time reaches 30 second
   if (timeCounter >= 30) {
+    inProgress = false;
     win = true;
   }
+  
+  return inProgress;
 }
 
-
+/*
 function winMsg(win) {
   if (win) {
     console.log("You've won!");
